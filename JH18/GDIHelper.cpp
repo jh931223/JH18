@@ -2,30 +2,30 @@
 #include "stdafx.h"
 #include "SoftRenderer.h"
 #include "GDIHelper.h"
-
 // 변수
 ULONG g_CurrentColor;
 BYTE *g_pBits;
 
 HDC	hScreenDC, hMemoryDC;
 HBITMAP hDefaultBitmap, hDIBitmap;
+DeviceSet deviceSet;
 
 // 함수
 
 void BufferSwap()
 {
-	BitBlt(hScreenDC, 0, 0, g_nClientWidth, g_nClientHeight, hMemoryDC, 0, 0, SRCCOPY);
+	BitBlt(hScreenDC, 0, 0, deviceSet.g_nClientWidth, deviceSet.g_nClientHeight, hMemoryDC, 0, 0, SRCCOPY);
 }
 
-void SetColor(BYTE r, BYTE g, BYTE b)
+void SetColor(BYTE r, BYTE g, BYTE b, BYTE a)
 {
-	g_CurrentColor = RGB(b, g, r);
+	g_CurrentColor = RGBA32(r, g, b, a);
 }
 
 void Clear()
 {
 	ULONG* dest = (ULONG*)g_pBits;
-	DWORD bytecount = g_nClientWidth * g_nClientHeight * sizeof(ULONG);
+	DWORD bytecount = deviceSet.g_nClientWidth * deviceSet.g_nClientHeight * sizeof(ULONG);
 	ULONG value = g_CurrentColor;
 	bytecount /= 4;
 	while (bytecount--)
@@ -43,8 +43,8 @@ void InitGDI(HWND hWnd)
 	BITMAPINFO bmi;
 	memset(&bmi, 0, sizeof(BITMAPINFO));
 	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	bmi.bmiHeader.biWidth = g_nClientWidth;
-	bmi.bmiHeader.biHeight = -g_nClientHeight;
+	bmi.bmiHeader.biWidth = deviceSet.g_nClientWidth;
+	bmi.bmiHeader.biHeight = -deviceSet.g_nClientHeight;
 	bmi.bmiHeader.biPlanes = 1;
 	bmi.bmiHeader.biBitCount = 32;
 	bmi.bmiHeader.biCompression = BI_RGB;

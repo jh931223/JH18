@@ -5,13 +5,12 @@
 #include "GDIHelper.h"
 #include "Renderer.h"
 #include "Triangle.h"
-
-bool IsInRange(int x, int y);
-void PutPixel(int x, int y);
+#include "Texture.h"
+#include "Mesh.h"
 
 bool IsInRange(int x, int y)
 {
-	return (abs(x) < (g_nClientWidth / 2)) && (abs(y) < (g_nClientHeight / 2));
+	return (abs(x) < (deviceSet.g_nClientWidth / 2)) && (abs(y) < (deviceSet.g_nClientHeight / 2));
 }
 
 void PutPixel(IntPoint pt)
@@ -19,9 +18,14 @@ void PutPixel(IntPoint pt)
 	if (!IsInRange(pt.X, pt.Y)) return;
 
 	ULONG* dest = (ULONG*)g_pBits;
-	DWORD offset = g_nClientWidth * g_nClientHeight / 2 + g_nClientWidth / 2 + pt.X + g_nClientWidth * -pt.Y;
+
+	int halfWidth = RoundToInt(deviceSet.g_nClientWidth * 0.5f);
+	int halfHeight = RoundToInt(deviceSet.g_nClientHeight * 0.5f);
+
+	DWORD offset = (halfHeight * deviceSet.g_nClientWidth - deviceSet.g_nClientWidth * pt.Y) + (halfWidth + pt.X);
 	*(dest + offset) = g_CurrentColor;
 }
+
 
 void DrawLine(const Vector3& start, const Vector3& end)
 {
@@ -36,61 +40,32 @@ void DrawLine(const Vector3& start, const Vector3& end)
 		Vector3 Pt = start * (1.0f - t) + end * t;
 		PutPixel(Pt.ToIntPoint());
 	}
-
 }
-void Draw2DTriangle(const Vector3& v1, const Vector3& v2, const Vector3& v3)
+
+void Draw2DTriangle(Triangle t)
 {
-	float xMin, yMin;
-	float xMax, yMax;
-	xMin = yMin = INFINITY;
-	xMax = yMax = -INFINITY;
-
-	if (v1.X < xMin) xMin = v1.X;
-	if (v2.X < xMin) xMin = v2.X;
-	if (v3.X < xMin) xMin = v3.X;
-	if (v1.X > xMax) xMax = v1.X;
-	if (v2.X > xMax) xMax = v2.X;
-	if (v3.X > xMax) xMax = v3.X;
-	if (v1.Y < yMin) yMin = v1.Y;
-	if (v2.Y < yMin) yMin = v2.Y;
-	if (v3.Y < yMin) yMin = v3.Y;
-	if (v1.Y > yMax) yMax = v1.Y;
-	if (v2.Y > yMax) yMax = v2.Y;
-	if (v3.Y > yMax) yMax = v3.Y;
-
-	Vector2 u = (v2 - v1).ToVector2();
-	Vector2 v = (v3 - v1).ToVector2();
-	float dotUU = u.Dot(u);
-	float dotUV = u.Dot(v);
-	float dotVV = v.Dot(v);
-	float invDenom = 1.0f / (dotUU * dotVV - dotUV * dotUV);
-
-	for (int y = RoundToInt(yMin); y < RoundToInt(yMax); y++)
+	for (int y = t.Min.Y; y <= t.Max.Y; y++)
 	{
-		for (int x = RoundToInt(xMin); x < RoundToInt(xMax); x++)
+		for (int x = t.Min.X; x <= t.Max.X; x++)
 		{
-			Vector2 w = (Vector3((float)x, (float)y, 0.0f) - v1).ToVector2();
-			float dotUW = u.Dot(w);
-			float dotVW = v.Dot(w);
-			float outS = (dotVV * dotUW - dotUV * dotVW) * invDenom;
-			float outT = (dotUU * dotVW - dotUV * dotUW) * invDenom;
-			if (outS < 0.0f) continue;
-			if (outT < 0.0f) continue;
-			if (outS + outT > 1.0f) continue;
+			Vector3 target((float)x + 0.5f, (float)y + 0.5f, 0.0f);
+			float outS, outT;
+			t.CalcBaryCentricCoord(target, &outS, &outT);
+			if (t.IsInTrianble(outS, outT))
+			{
+				if (g_Texture->IsLoaded())
+				{
+					g_CurrentColor = g_Texture->GetTexturePixel(outS, outT, t);
+				}
+				else
+				{
+					g_CurrentColor = t.GetPixelColor(target, outS, outT);
+				}
 
-			PutPixel(IntPoint(x, y));
+				PutPixel(IntPoint(x, y));
+			}			
 		}
 	}
-}
-
-void Draw2DTriangle(const Triangle& tri, float angle, Vector3 pos, float scale)
-{
-	Matrix3 TMat, RMat, SMat;
-	TMat.SetTranslation(pos.X, pos.Y);
-	RMat.SetRotation(angle);
-	SMat.SetScale(scale);
-	Matrix3 TRSMat = TMat * RMat * SMat;
-	Draw2DTriangle(tri.vertices[0].position * TRSMat, tri.vertices[1].position * TRSMat, tri.vertices[2].position * TRSMat);
 }
 
 void UpdateFrame(void)
@@ -100,10 +75,9 @@ void UpdateFrame(void)
 	Clear();
 
 	// Draw
-	Triangle tri;
+	Vector3 Pt1, Pt2, Pt3, Pt4;
 
 	static float offsetX = 0.0f;
-	static float offsetY = 0.0f;
 	static float angle = 0.0f;
 	static float scale = 1.0f;
 
@@ -114,12 +88,57 @@ void UpdateFrame(void)
 	if (GetAsyncKeyState(VK_PRIOR)) scale *= 1.01f;
 	if (GetAsyncKeyState(VK_NEXT)) scale *= 0.99f;
 
-	tri.vertices[0].position.SetPoint(0.0f, 0.0f);
-	tri.vertices[1].position.SetPoint(160.0f, 160.0f);
-	tri.vertices[2].position.SetPoint(-20.0f, 160.0f);
+	Matrix3 TMat, RMat, SMat;
+	TMat.SetTranslation(offsetX, 0.0f);
+	RMat.SetRotation(angle);
+	SMat.SetScale(scale);
+	Matrix3 TRSMat = TMat * RMat * SMat;
 
-	SetColor(255, 0, 0);
-	Draw2DTriangle(tri, angle,Vector3(offsetX, offsetY,0),scale);
+	Pt1.SetPoint(-150, 150.0f);
+	Pt2.SetPoint(150.0f, 150.0f);
+	Pt3.SetPoint(150.0f, -150.0f);
+	Pt4.SetPoint(-150.0f, -150.0f);
+
+	Vertex v1(Pt1);
+	v1.color = RGB32(255, 0, 0);
+	//v1.uv = Vector2(0.0f, 0.0f);
+	v1.uv = Vector2(0.125f, 0.125f);
+	Vertex v2(Pt2);
+	v2.color = RGB32(0, 255, 0);
+	//v2.uv = Vector2(1.0f, 0.0f);
+	v2.uv = Vector2(0.25f, 0.125f);
+	Vertex v3(Pt3 );
+	v3.color = RGB32(0, 0, 255);
+	//v3.uv = Vector2(1.0f, 1.0f);
+	v3.uv = Vector2(0.25f, 0.25f);
+	Triangle T1(v1, v2, v3);
+
+	Vertex v4(Pt4);
+	v4.color = RGB32(255, 255, 0);
+	//v4.uv = Vector2(0.0f, 1.0f);
+	v4.uv = Vector2(0.125f, 0.25f);
+
+	Vertex *v=new Vertex[4];
+	v[0] = v1;
+	v[1] = v2;
+	v[2] = v3;
+	v[3] = v4;
+
+	unsigned int *indices=new unsigned int[6];
+	indices[0] = 0;
+	indices[1] = 1;
+	indices[2] = 2;
+	indices[3] = 0;
+	indices[4] = 2;
+	indices[5] = 3;
+	Mesh mesh;
+	mesh.SetVertices(v, 4);
+	mesh.SetIndices(indices, 6);
+	mesh.Render(TRSMat, g_Texture);
+	//Triangle T2(v1, v4, v3);
+
+	//Draw2DTriangle(T1);
+	//Draw2DTriangle(T2);
 
 	// Buffer Swap 
 	BufferSwap();

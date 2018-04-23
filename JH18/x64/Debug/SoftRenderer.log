@@ -1,2 +1,8 @@
-﻿  Renderer.cpp
-  SoftRenderer.vcxproj -> D:\작업물\공부\SoftRenderer-master\x64\Debug\SoftRenderer.exe
+﻿  Mesh.cpp
+c:\users\jh931\onedrive\desktop\새 폴더 (2)\softrenderer-master\matrix.h(50): warning C4099: 'Matrix3': 처음에는 'class'을(를) 사용하여 형식 이름을 표시했는데 이제는 'struct'을(를) 사용하여 표시합니다.
+  c:\users\jh931\onedrive\desktop\새 폴더 (2)\softrenderer-master\matrix.h(49): note: 'Matrix3' 선언을 참조하십시오.
+c:\users\jh931\onedrive\desktop\새 폴더 (2)\softrenderer-master\vector.h(7): warning C4099: 'IntPoint': 처음에는 'class'을(를) 사용하여 형식 이름을 표시했는데 이제는 'struct'을(를) 사용하여 표시합니다.
+  c:\users\jh931\onedrive\desktop\새 폴더 (2)\softrenderer-master\vector.h(6): note: 'IntPoint' 선언을 참조하십시오.
+c:\users\jh931\onedrive\desktop\새 폴더 (2)\softrenderer-master\triangle.h(7): warning C4099: 'Vertex': 처음에는 'class'을(를) 사용하여 형식 이름을 표시했는데 이제는 'struct'을(를) 사용하여 표시합니다.
+  c:\users\jh931\onedrive\desktop\새 폴더 (2)\softrenderer-master\triangle.h(6): note: 'Vertex' 선언을 참조하십시오.
+  SoftRenderer.vcxproj -> C:\Users\jh931\OneDrive\Desktop\새 폴더 (2)\SoftRenderer-master\x64\Debug\SoftRenderer.exe

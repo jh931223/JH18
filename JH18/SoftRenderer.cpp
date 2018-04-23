@@ -5,10 +5,12 @@
 #include "SoftRenderer.h"
 #include "GDIHelper.h"
 #include "Renderer.h"
+#include "Texture.h"
+#include "DeviceSet.h"
 
-int g_nClientWidth = 640;
-int g_nClientHeight = 480;
+
 bool g_bIsActive;
+Texture* g_Texture;
 
 #define MAX_LOADSTRING 100
 
@@ -36,6 +38,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: 여기에 코드를 입력합니다.
+	g_Texture = new Texture();
+	deviceSet.g_nClientWidth = 640;
+	deviceSet.g_nClientHeight = 480;
+
 
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -131,7 +137,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case IDM_ABOUT:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
-            case IDM_EXIT:
+			case IDD_LOADTEXTURE:
+				g_Texture->LoadBMP("test.bmp");
+				break;
+			case IDM_EXIT:
                 DestroyWindow(hWnd);
                 break;
             default:
@@ -224,8 +233,8 @@ BOOL WindowInit(HINSTANCE hInstance, int nCmdShow)
 	RECT rect;
 	rect.left = 0;
 	rect.top = 0;
-	rect.right = g_nClientWidth - 1;
-	rect.bottom = g_nClientHeight - 1;
+	rect.right = deviceSet.g_nClientWidth - 1;
+	rect.bottom = deviceSet.g_nClientHeight - 1;
 	AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, true);
 	int WindowWidth = rect.right - rect.left + 1;
 	int WindowHeight = rect.bottom - rect.top + 1;
