@@ -28,6 +28,9 @@
     <Filter Include="Image">
       <UniqueIdentifier>{131d3109-725d-4580-9039-1dc9983522cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Geometry">
+      <UniqueIdentifier>{1bc3c23a-de60-447e-9bab-1bbbd3688a0b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -63,11 +66,17 @@
     <ClInclude Include="Texture.h">
       <Filter>Image</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Math</Filter>
-    </ClInclude>
     <ClInclude Include="DeviceSet.h">
       <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Geometry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -99,7 +108,7 @@
       <Filter>Image</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
-      <Filter>Math</Filter>
+      <Filter>Geometry</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

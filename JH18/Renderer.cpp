@@ -68,6 +68,11 @@ void Draw2DTriangle(Triangle t)
 	}
 }
 
+void DrawCall(Mesh* meshToDraw,)
+{
+
+}
+
 void UpdateFrame(void)
 {
 	// Buffer Clear

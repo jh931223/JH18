@@ -5,6 +5,7 @@
 #include "Vector.h"
 #include "Triangle.h"
 #include "Texture.h"
+#include "Vertex.h"
 Mesh::Mesh()
 {
 }
