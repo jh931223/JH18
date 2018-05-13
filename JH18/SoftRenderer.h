@@ -4,4 +4,3 @@
 #include "Texture.h"
 
 extern bool g_bIsActive;
-extern Texture* g_Texture;

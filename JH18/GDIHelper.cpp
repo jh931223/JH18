@@ -5,10 +5,11 @@
 // 변수
 ULONG g_CurrentColor;
 BYTE *g_pBits;
-
+BYTE** gBuffer;
 HDC	hScreenDC, hMemoryDC;
 HBITMAP hDefaultBitmap, hDIBitmap;
 DeviceSet deviceSet;
+
 
 // 함수
 
@@ -32,6 +33,11 @@ void Clear()
 	{
 		*dest++ = value;
 	}
+	//for (int i = 0; i < deviceSet.g_nClientWidth; i++)
+	//{
+	//	for (int j = 0; j < deviceSet.g_nClientHeight; j++)
+	//		gBuffer[i][j] = 255;
+	//}
 	return;
 }
 
@@ -53,6 +59,14 @@ void InitGDI(HWND hWnd)
 	hDefaultBitmap = (HBITMAP)SelectObject(hMemoryDC, hDIBitmap);
 
 	g_bIsActive = TRUE;
+
+	gBuffer = new BYTE*[deviceSet.g_nClientWidth];
+	for (int i = 0; i < deviceSet.g_nClientWidth; i++)
+	{
+		gBuffer[i] = new BYTE[deviceSet.g_nClientHeight];
+		for (int j = 0; j < deviceSet.g_nClientHeight; j++)
+			gBuffer[i][j] = 255;
+	}
 }
 
 void ReleaseGDI(HWND hWnd)
@@ -63,6 +77,15 @@ void ReleaseGDI(HWND hWnd)
 	DeleteObject(hDIBitmap);
 	ReleaseDC(hWnd, hScreenDC);
 	ReleaseDC(hWnd, hMemoryDC);
+
+	if (gBuffer)
+	{
+		for (int i = 0; i < deviceSet.g_nClientWidth; i++)
+		{
+			delete[] gBuffer[i];
+		}
+		delete[] gBuffer;
+	}
 }
 
 

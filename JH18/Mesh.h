@@ -1,9 +1,5 @@
 #pragma once
-#include"GDIHelper.h"
 class Vertex;
-class Matrix3;
-class IntPoint;
-class Texture;
 class Mesh
 {
 private:
@@ -16,8 +12,9 @@ public:
 	~Mesh();
 	void SetVertices(Vertex* v, size_t _size);
 	void SetIndices(unsigned int* i, size_t _size);
-	void Render(Matrix3 matrix, Texture* _texture);
-	void PutPixel(IntPoint p);
-	bool IsInRange(int x, int y);
+	size_t GetIndexSize();
+	size_t GetVertexSize();
+	Vertex* GetVertices();
+	unsigned int* GetIndices();
 };
 

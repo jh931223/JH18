@@ -31,6 +31,9 @@
     <Filter Include="Geometry">
       <UniqueIdentifier>{1bc3c23a-de60-447e-9bab-1bbbd3688a0b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Geometry\Shaders">
+      <UniqueIdentifier>{8b42d7f1-7eb5-434d-b4a6-7c539db4285e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -78,6 +81,12 @@
     <ClInclude Include="Shader.h">
       <Filter>Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureShader.h">
+      <Filter>Geometry\Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -109,6 +118,12 @@
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureShader.cpp">
+      <Filter>Geometry\Shaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
