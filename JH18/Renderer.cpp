@@ -10,6 +10,7 @@
 #include "Material.h"
 #include "TextureShader.h"
 #include <vector>
+#include<algorithm>
 bool IsInRange(int x, int y)
 {
 	return (abs(x) < (deviceSet.g_nClientWidth / 2)) && (abs(y) < (deviceSet.g_nClientHeight / 2));
@@ -67,6 +68,7 @@ SpriteRenderer renderer3;
 SpriteRenderer renderer4;
 
 Material mat1;
+Material mat2;
 
 Mesh mesh1;
 Mesh mesh2;
@@ -74,26 +76,10 @@ Mesh mesh2;
 Texture* g_Texture;
 
 
-
-void SortRenderer(std::vector<SpriteRenderer*>& _array)
+bool comp(SpriteRenderer* r1, SpriteRenderer* r2)
 {
-	int maxLayer = 10;
-	std::vector<SpriteRenderer*> newArray;
-	for (int i = 0; i <= maxLayer; i++)
-	{
-		for (auto r : rendererArray)
-		{
-			if (r->sortingLayer > maxLayer)
-				r->sortingLayer = maxLayer;
-			if (r->sortingLayer == i)
-			{
-				newArray.push_back(r);
-			}
-		}
-	}
-	_array = newArray;
+	return r1 < r2;
 }
-
 void InitFrame(void)
 {
 
@@ -105,7 +91,14 @@ void InitFrame(void)
 
 	mat1.SetShader(new TextureShader);
 	mat1.GetParams()->SetTexture("MainTex", g_Texture);
-	mat1.GetParams()->SetColor("TintColor", RGB32(0, 0, 0));
+	mat1.GetParams()->SetColor("TintColor", RGB32(255, 0, 0));
+	mat1.GetParams()->SetFloat2("Offset", Vector2(0.125f, 0.125f));
+
+
+	mat2.SetShader(new TextureShader);
+	mat2.GetParams()->SetTexture("MainTex", g_Texture);
+	mat2.GetParams()->SetColor("TintColor", RGB32(0, 35, 35));
+	mat2.GetParams()->SetFloat2("Offset", Vector2(0.25f, 0.25f));
 
 	// 메쉬 셋
 
@@ -117,75 +110,30 @@ void InitFrame(void)
 
 	Vertex v1(Pt1);
 	v1.color = RGB32(255, 0, 0);
-	v1.uv = Vector2(0.125f, 0.125f);
+	v1.uv = Vector2(0, 0);
 	Vertex v2(Pt2);
 	v2.color = RGB32(0, 255, 0);
-	v2.uv = Vector2(0.25f, 0.125f);
+	v2.uv = Vector2(0.125f, 0);
 	Vertex v3(Pt3);
 	v3.color = RGB32(0, 0, 255);
-	v3.uv = Vector2(0.25f, 0.25f);
+	v3.uv = Vector2(0.125f, 0.125f);
 	Vertex v4(Pt4);
 	v4.color = RGB32(255, 255, 0);
-	v4.uv = Vector2(0.125f, 0.25f);
+	v4.uv = Vector2(0, 0.125f);
 
-	Vertex *v = new Vertex[4];
-	v[0] = v1;
-	v[1] = v2;
-	v[2] = v3;
-	v[3] = v4;
-
-	unsigned int *indices = new unsigned int[6];
-	indices[0] = 0;
-	indices[1] = 1;
-	indices[2] = 2;
-	indices[3] = 0;
-	indices[4] = 2;
-	indices[5] = 3;
+	Vertex *v = new Vertex[4]{ v1,v2,v3,v4 };
+	unsigned int *indices = new unsigned int[6]{ 0,1,2,0,2,3 };
 	mesh1.SetVertices(v, 4);
 	mesh1.SetIndices(indices, 6);
 
-	Pt1.SetPoint(-150, 150.0f);
-	Pt2.SetPoint(150.0f, 150.0f);
-	Pt3.SetPoint(150.0f, -150.0f);
-	Pt4.SetPoint(-150.0f, -150.0f);
-
-	v1.position=(Pt1);
-	v1.color = RGB32(255, 0, 0);
-	v1.uv = Vector2(0.125f + 0.125f, 0.125f);
-	v2.position=(Pt2);
-	v2.color = RGB32(0, 255, 0);
-	v2.uv = Vector2(0.25f + 0.125f, 0.125f);
-	v3.position=(Pt3);
-	v3.color = RGB32(0, 0, 255);
-	v3.uv = Vector2(0.25f + 0.125f, 0.25f);
-	v4.position=(Pt4);
-	v4.color = RGB32(255, 255, 0);
-	v4.uv = Vector2(0.125f + 0.125f, 0.25f);
-
-	Vertex *vv = new Vertex[4];
-	vv[0] = v1;
-	vv[1] = v2;
-	vv[2] = v3;
-	vv[3] = v4;
-
-	unsigned int *indices2 = new unsigned int[6];
-	indices2[0] = 0;
-	indices2[1] = 1;
-	indices2[2] = 2;
-	indices2[3] = 0;
-	indices2[4] = 2;
-	indices2[5] = 3;
-	mesh2.SetVertices(vv, 4);
-	mesh2.SetIndices(indices2, 6);
-
 	////////////////////렌더러 셋
-	renderer1.SetRenderer(Vector3(0, 100, 0),Vector3(0,0,0),Vector3(1,1,1), &mat1, &mesh1, 2);
+	renderer1.SetRenderer(Vector3(100, 0, 0),Vector3(0,0,0),Vector3(1,1,1), &mat1, &mesh1, 2);
 	rendererArray.push_back(&renderer1);
 
-	renderer2.SetRenderer(Vector3(100, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), &mat1, &mesh2, 1);
+	renderer2.SetRenderer(Vector3(-100, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), &mat2, &mesh1, 1);
 	rendererArray.push_back(&renderer2);
 
-	SortRenderer(rendererArray);
+	std::sort(rendererArray.begin(), rendererArray.end(), comp);
 }
 
 void UpdateFrame(void)
@@ -210,13 +158,13 @@ void UpdateFrame(void)
 	renderer1.rotation = renderer1.rotation + Vector3(angle, angle, angle);
 	renderer1.scale = renderer1.scale + Vector3(scale, scale, scale);
 
+	Matrix3 TMat, RMat, SMat, TRSMat;
 	for (auto i : rendererArray)
 	{
-		Matrix3 TMat, RMat, SMat;
 		TMat.SetTranslation(i->position.X,i->position.Y);
 		RMat.SetRotation(i->rotation.Z);
 		SMat.SetScale(i->scale.Z);
-		Matrix3 TRSMat = TMat * RMat * SMat;
+		TRSMat = TMat * RMat * SMat;
 		i->material->DrawCall(i->mesh, TRSMat, TRSMat, TRSMat);
 	}
 

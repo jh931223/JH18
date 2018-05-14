@@ -39,7 +39,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // TODO: 여기에 코드를 입력합니다.
 	deviceSet.g_nClientWidth = 640;
 	deviceSet.g_nClientHeight = 480;
-	InitFrame();
 
 
     // 전역 문자열을 초기화합니다.
@@ -148,6 +147,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
 	case WM_CREATE:
 		{
+			InitFrame();
 			InitGDI(hWnd);
 		}
 		break;

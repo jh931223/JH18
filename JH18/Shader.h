@@ -13,6 +13,7 @@ class ShaderParameterCollections
 {
 	std::map<std::string, ULONG> params_Color;
 	std::map<std::string, Vector3> params_Float3;
+	std::map<std::string, Vector2> params_Float2;
 	std::map<std::string, int> params_Int;
 	std::map<std::string, float> params_Float;
 	std::map<std::string, Texture*> params_Texture;
@@ -20,12 +21,14 @@ public:
 
 	inline void SetColor(std::string name, ULONG f4) { params_Color[name] = f4; }
 	inline void SetFloat3(std::string name, Vector3 f3) { params_Float3[name] = f3; }
+	inline void SetFloat2(std::string name, Vector2 f2) { params_Float2[name] = f2; }
 	inline void SetFloat(std::string name, float f) { params_Float[name] = f; }
 	inline void SetInt(std::string name, int i) { params_Int[name] = i; }
 	inline void SetTexture(std::string name, Texture* tC) { params_Texture[name] = tC; }
 
 	inline ULONG GetColor(std::string name) { return params_Color[name]; }
 	inline Vector3 GetFloat3(std::string name) { return params_Float3[name]; }
+	inline Vector2 GetFloat2(std::string name) { return params_Float2[name]; }
 	inline float GetFloat(std::string name) { return params_Float[name]; }
 	inline int GetInt(std::string name) { return params_Int[name]; }
 	inline Texture* GetTexture(std::string name) { return params_Texture[name]; }

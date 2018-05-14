@@ -8,6 +8,7 @@ class TextureShader :
 public:
 	Texture* MainTex;
 	ULONG TintColor;
+	Vector2 offSet;
 	TextureShader();
 	virtual ~TextureShader();
 

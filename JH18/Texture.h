@@ -13,6 +13,6 @@ public:
 	ULONG GetPixel(int x, int y);
 
 	int width;
-	int height;		
+	int height;
 	ULONG* Buffer;
 };

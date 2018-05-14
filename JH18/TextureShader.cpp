@@ -14,7 +14,7 @@ TextureShader::~TextureShader()
 
 ULONG TextureShader::frag(pInput input)
 {
-	ULONG color = tex2D(MainTex, input.texcoord);
+	ULONG color = tex2D(MainTex, input.texcoord+offSet);
 	ULONG newColor;
 	BYTE r = GetRValue(color)| GetRValue(TintColor);
 	BYTE g = GetGValue(color)| GetGValue(TintColor);
@@ -41,5 +41,6 @@ void TextureShader::DrawCall(Mesh* mesh,Matrix3 _viewMatrix, Matrix3 _worldMatri
 	projectionMatrix = _projectionMatrix;
 	MainTex = params->GetTexture("MainTex");
 	TintColor = params->GetColor("TintColor");
+	offSet = params->GetFloat2("Offset");
 	Render(mesh);
 }
