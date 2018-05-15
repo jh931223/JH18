@@ -93,5 +93,10 @@ public:
 		_22 = _11;
 	}
 
+	void Transpose()
+	{
+	
+	}
+
 	Matrix3 operator *(const Matrix3 Other) const;
 };

@@ -13,7 +13,7 @@ public:
 	Material();
 	~Material();
 	void SetShader(Shader*);
-	void DrawCall(Mesh* mesh,Matrix3,Matrix3 viewM,Matrix3 projM);
+	Shader* GetShader();
 	ShaderParameterCollections* GetParams();
 	int layer;
 };

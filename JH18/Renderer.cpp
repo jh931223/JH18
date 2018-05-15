@@ -11,6 +11,8 @@
 #include "TextureShader.h"
 #include <vector>
 #include<algorithm>
+#include"Transform.h"
+#include"SpriteRenderer.h"
 bool IsInRange(int x, int y)
 {
 	return (abs(x) < (deviceSet.g_nClientWidth / 2)) && (abs(y) < (deviceSet.g_nClientHeight / 2));
@@ -47,18 +49,7 @@ void DrawLine(const Vector3& start, const Vector3& end)
 
 
 
-struct SpriteRenderer
-{
-	Vector3 position;
-	Vector3 rotation;
-	Vector3 scale;
-	Material* material;
-	Mesh* mesh;
-	int sortingLayer;
-	SpriteRenderer() {}
-	SpriteRenderer(Vector3 _p, Vector3 _rot, Vector3 _scale, Material* _m, Mesh* _me, int _sL) :position(_p), material(_m), mesh(_me), sortingLayer(_sL), rotation(_rot),scale(_scale) {}
-	void SetRenderer(Vector3 _p, Vector3 _rot, Vector3 _scale, Material* _m, Mesh* _me, int _sL) { position = (_p); material = (_m); mesh = (_me); sortingLayer = (_sL); rotation = _rot; scale = _scale; }
-};
+
 
 std::vector<SpriteRenderer*> rendererArray;
 
@@ -127,11 +118,19 @@ void InitFrame(void)
 	mesh1.SetIndices(indices, 6);
 
 	////////////////////·»´õ·¯ ¼Â
-	renderer1.SetRenderer(Vector3(100, 0, 0),Vector3(0,0,0),Vector3(1,1,1), &mat1, &mesh1, 2);
-	rendererArray.push_back(&renderer1);
+	Transform tr;
 
-	renderer2.SetRenderer(Vector3(-100, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), &mat2, &mesh1, 1);
-	rendererArray.push_back(&renderer2);
+	{
+		tr.position = Vector3(100, 0, 0), tr.rotation = Vector3(0, 0, 0), tr.scale = Vector3(1, 1, 1);
+		renderer1.SetRenderer(tr, &mat1, &mesh1, 2);
+		rendererArray.push_back(&renderer1);
+	}
+
+	{ 
+		tr.position = Vector3(-100, 0, 0), tr.rotation = Vector3(0, 0, 0), tr.scale = Vector3(1, 1, 1);
+		renderer2.SetRenderer(tr, &mat2, &mesh1, 1);
+		rendererArray.push_back(&renderer2);
+	}
 
 	std::sort(rendererArray.begin(), rendererArray.end(), comp);
 }
@@ -154,18 +153,14 @@ void UpdateFrame(void)
 	if (GetAsyncKeyState(VK_DOWN)) angle -= 1.0f;
 	if (GetAsyncKeyState(VK_PRIOR)) scale += 0.1f;
 	if (GetAsyncKeyState(VK_NEXT)) scale -= 0.1f;
-	renderer1.position =renderer1.position + Vector3(offsetX, 0,0);
-	renderer1.rotation = renderer1.rotation + Vector3(angle, angle, angle);
-	renderer1.scale = renderer1.scale + Vector3(scale, scale, scale);
+	renderer1.transform.position =renderer1.transform.position + Vector3(offsetX, 0,0);
+	renderer1.transform.rotation = renderer1.transform.rotation + Vector3(angle, angle, angle);
+	renderer1.transform.scale = renderer1.transform.scale + Vector3(scale, scale, scale);
 
-	Matrix3 TMat, RMat, SMat, TRSMat;
+	Matrix3 viewMatrix, projMatrix;
 	for (auto i : rendererArray)
 	{
-		TMat.SetTranslation(i->position.X,i->position.Y);
-		RMat.SetRotation(i->rotation.Z);
-		SMat.SetScale(i->scale.Z);
-		TRSMat = TMat * RMat * SMat;
-		i->material->DrawCall(i->mesh, TRSMat, TRSMat, TRSMat);
+		i->DrawCall(viewMatrix, projMatrix);
 	}
 
 	//Triangle T2(v1, v4, v3);

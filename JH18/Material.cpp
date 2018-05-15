@@ -22,10 +22,9 @@ void Material::SetShader(Shader* _shader)
 		delete shader;
 	shader = _shader;
 }
-void Material::DrawCall(Mesh * mesh, Matrix3 worldM,Matrix3 viewM, Matrix3 projM)
+Shader * Material::GetShader()
 {
-	if(shader)
-		shader->DrawCall(mesh, viewM, worldM, projM,& params);
+	return shader;
 }
 ShaderParameterCollections* Material::GetParams()
 {
