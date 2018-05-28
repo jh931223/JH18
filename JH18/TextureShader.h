@@ -15,6 +15,6 @@ public:
 	// Shader을(를) 통해 상속됨
 	virtual ULONG frag(pInput) override;
 	virtual vOutput vert(vInput) override;
-	virtual void DrawCall(Mesh* mesh,Matrix3 viewMatrix, Matrix3 worldMatrix, Matrix3 projectionMatrix, ShaderParameterCollections * params) override;
+	virtual void SetShaderParameter(Matrix3 viewMatrix, Matrix3 worldMatrix, Matrix3 projectionMatrix, ShaderParameterCollections * params) override;
 };
 

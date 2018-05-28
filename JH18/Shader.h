@@ -45,7 +45,12 @@ public:
 	virtual ~Shader() {}
 	virtual ULONG frag(pInput input)=0;
 	virtual vOutput vert(vInput input) = 0;
-	virtual void DrawCall(Mesh* mesh,Matrix3 viewMatrix, Matrix3 worldMatrix, Matrix3 projectionMatrix, ShaderParameterCollections* params) = 0;
+	void DrawCall(Mesh* mesh, Matrix3 viewMatrix, Matrix3 worldMatrix, Matrix3 projectionMatrix, ShaderParameterCollections* params)
+	{
+		SetShaderParameter(viewMatrix, worldMatrix, projectionMatrix, params);
+		Render(mesh);
+	}
+	virtual void SetShaderParameter(Matrix3 viewMatrix, Matrix3 worldMatrix, Matrix3 projectionMatrix, ShaderParameterCollections* params) = 0;
 	void Render(Mesh* mesh)
 	{
 		unsigned int vertid = 0;

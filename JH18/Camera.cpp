@@ -12,14 +12,18 @@ Camera::~Camera()
 {
 }
 
-void Camera::RecalcMatrix()
+Matrix3 Camera::GenerateMatrix()
 {
-	Matrix3 T, R;
-	T.SetTranslation(-transform.position.X, -transform.position.Y);
-	R.SetRotation(transform.rotation.X);
+	Matrix3 TMat, RMat;
+	TMat.SetTranslation(-transform.position.X, -transform.position.Y);
+	RMat.SetRotation(transform.rotation.X);
+	RMat.Tranpose();
+	viewMatrix= RMat * TMat;
+	return viewMatrix;
 }
 
 Matrix3 Camera::GetViewMatrix()
 {
+
 	return viewMatrix;
 }

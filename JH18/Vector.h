@@ -62,18 +62,18 @@ public:
 	Vector3() : X(0), Y(0), Z(0) {}
 	Vector3(float InX, float InY, float InZ) : X(InX), Y(InY), Z(InZ) {}
 
-	void SetPoint(float InX, float InY)
+	void SetPoint(float InX, float InY,float InZ=1.0f)
 	{
 		X = InX;
 		Y = InY;
-		Z = 1.0f;
+		Z = InZ;
 	}
 
-	void SetVector(float InX, float InY)
+	void SetVector(float InX, float InY, float InZ = 0.0f)
 	{
 		X = InX;
 		Y = InY;
-		Z = 0.0f;
+		Z =InZ;
 	}
 
 	float Dist()

@@ -13,6 +13,7 @@
 #include<algorithm>
 #include"Transform.h"
 #include"SpriteRenderer.h"
+#include"Camera.h"
 bool IsInRange(int x, int y)
 {
 	return (abs(x) < (deviceSet.g_nClientWidth / 2)) && (abs(y) < (deviceSet.g_nClientHeight / 2));
@@ -66,6 +67,7 @@ Mesh mesh2;
 
 Texture* g_Texture;
 
+Camera mainCam;
 
 bool comp(SpriteRenderer* r1, SpriteRenderer* r2)
 {
@@ -118,21 +120,50 @@ void InitFrame(void)
 	mesh1.SetIndices(indices, 6);
 
 	////////////////////렌더러 셋
-	Transform tr;
+	Transform2D tr;
 
 	{
-		tr.position = Vector3(100, 0, 0), tr.rotation = Vector3(0, 0, 0), tr.scale = Vector3(1, 1, 1);
+		tr.position = Vector3(100, 0, 0), tr.rotation = Vector3(0, 0, 0), tr.scale = Vector3(0.3, 0.3, 0.3);
 		renderer1.SetRenderer(tr, &mat1, &mesh1, 2);
 		rendererArray.push_back(&renderer1);
 	}
 
 	{ 
-		tr.position = Vector3(-100, 0, 0), tr.rotation = Vector3(0, 0, 0), tr.scale = Vector3(1, 1, 1);
+		tr.position = Vector3(-100, 0, 0), tr.rotation = Vector3(0, 0, 0), tr.scale = Vector3(0.3, 0.3, 0.3);
 		renderer2.SetRenderer(tr, &mat2, &mesh1, 1);
 		rendererArray.push_back(&renderer2);
 	}
 
 	std::sort(rendererArray.begin(), rendererArray.end(), comp);
+
+	//////////////////카메라 셋
+
+	mainCam.GenerateMatrix();
+}
+Vector2 GetRectHit(Vector2 top, Vector2 bottom, Vector2 start,Vector2 dir)
+{
+	if (0 == dir.X && 1 == dir.Y)
+		return Vector2(start.X, top.Y);
+	else if (0 == dir.X && -1 == dir.Y)
+		return Vector2(start.X, bottom.Y);
+	else if (0 == dir.Y && 1 == dir.X)
+		return Vector2(top.X, start.Y);
+	else if (0 == dir.Y && -1 == dir.X)
+		return Vector2(bottom.X, start.Y);
+	float n[4] =
+	{
+		(top.Y - start.Y) / dir.Y, // 상
+		(bottom.Y - start.Y) / dir.Y, // 아래
+		(top.X - start.X) / dir.X, // 우
+		(bottom.X - start.X) / dir.X, // 좌
+	};
+	int min=-1;
+	for (int i = 0; i < 4; i++)
+	{
+		if (min == -1 || min > n[i])
+			min = n[i];
+	}
+	return start + dir * min;
 }
 
 void UpdateFrame(void)
@@ -153,15 +184,62 @@ void UpdateFrame(void)
 	if (GetAsyncKeyState(VK_DOWN)) angle -= 1.0f;
 	if (GetAsyncKeyState(VK_PRIOR)) scale += 0.1f;
 	if (GetAsyncKeyState(VK_NEXT)) scale -= 0.1f;
-	renderer1.transform.position =renderer1.transform.position + Vector3(offsetX, 0,0);
-	renderer1.transform.rotation = renderer1.transform.rotation + Vector3(angle, angle, angle);
-	renderer1.transform.scale = renderer1.transform.scale + Vector3(scale, scale, scale);
+	mainCam.transform.position = mainCam.transform.position + Vector3(offsetX, 0,0);
+	mainCam.transform.rotation = mainCam.transform.rotation + Vector3(angle, angle, angle);
+	mainCam.transform.scale = mainCam.transform.scale + Vector3(scale, scale, scale);
+	
 
-	Matrix3 viewMatrix, projMatrix;
+
+	Matrix3 viewMatrix= mainCam.GenerateMatrix(), projMatrix;
 	for (auto i : rendererArray)
 	{
 		i->DrawCall(viewMatrix, projMatrix);
 	}
+
+	// Axis Draw
+
+	Vector2 top(deviceSet.g_nClientWidth*0.5f, deviceSet.g_nClientHeight*0.5f);
+	Vector2 bottom(-deviceSet.g_nClientWidth*0.5f, -deviceSet.g_nClientHeight*0.5f);
+	Vector2 point;
+
+	//MaxX
+	Vector3 maxAxis(0, 0, 1);
+	maxAxis = maxAxis * viewMatrix;
+	Vector3 dir = Vector3(1, 0,1)*viewMatrix - maxAxis;
+	point=GetRectHit(top, bottom, Vector2(maxAxis.X, maxAxis.Y), Vector2(dir.X, dir.Y));
+	maxAxis.SetPoint(point.X, point.Y);
+
+
+	//MinX
+	Vector3 minAxis(0, 0, 1);
+	minAxis = minAxis* mainCam.transform.GetRMatrix() * viewMatrix;
+	dir = Vector3(-1, 0, 1)*viewMatrix - minAxis;;
+	point=GetRectHit(top, bottom, Vector2(minAxis.X, minAxis.Y), Vector2(dir.X, dir.Y));
+	minAxis.SetPoint(point.X, point.Y);
+
+	SetColor(255, 0, 0);
+	DrawLine(minAxis, maxAxis);
+
+
+
+	//MaxY
+	maxAxis.SetPoint(0, 0, 1);
+	maxAxis = maxAxis * viewMatrix;
+	 dir = Vector3(0, 1, 1)*viewMatrix - maxAxis;
+	point = GetRectHit(top, bottom, Vector2(maxAxis.X, maxAxis.Y), Vector2(dir.X, dir.Y));
+	maxAxis.SetPoint(point.X, point.Y);
+
+	//MinY
+	minAxis.SetPoint(0, 0, 1);
+	minAxis = minAxis * mainCam.transform.GetRMatrix() * viewMatrix;
+	dir = Vector3(0, -1, 1)*viewMatrix - minAxis;;
+	point = GetRectHit(top, bottom, Vector2(minAxis.X, minAxis.Y), Vector2(dir.X, dir.Y));
+	minAxis.SetPoint(point.X, point.Y);
+
+	SetColor(0, 255, 0);
+	DrawLine(minAxis, maxAxis);
+	
+
 
 	//Triangle T2(v1, v4, v3);
 

@@ -27,14 +27,14 @@ ULONG TextureShader::frag(pInput input)
 vOutput TextureShader::vert(vInput input)
 {
 	vOutput output;
-	output.position = input.position*worldMatrix;
+	output.position = input.position*worldMatrix*viewMatrix;
 	output.color = input.color;
 	output.normal = input.normal;
 	output.texcoord = input.texcoord;
 	return output;
 }
 
-void TextureShader::DrawCall(Mesh* mesh,Matrix3 _viewMatrix, Matrix3 _worldMatrix, Matrix3 _projectionMatrix, ShaderParameterCollections * params)
+void TextureShader::SetShaderParameter(Matrix3 _viewMatrix, Matrix3 _worldMatrix, Matrix3 _projectionMatrix, ShaderParameterCollections * params)
 {
 	worldMatrix = _worldMatrix;
 	viewMatrix = _viewMatrix;
@@ -42,5 +42,4 @@ void TextureShader::DrawCall(Mesh* mesh,Matrix3 _viewMatrix, Matrix3 _worldMatri
 	MainTex = params->GetTexture("MainTex");
 	TintColor = params->GetColor("TintColor");
 	offSet = params->GetFloat2("Offset");
-	Render(mesh);
 }

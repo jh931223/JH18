@@ -122,6 +122,21 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - 종료 메시지를 게시하고 반환합니다.
 //
 //
+#ifdef _DEBUG
+int main() {
+
+	// Calling the wWinMain function to start the GUI program
+	// Parameters:
+	// GetModuleHandle(NULL) - To get a handle to the current instance
+	// NULL - Previous instance is not needed
+	// NULL - Command line parameters are not needed
+	// 1 - To show the window normally
+	wWinMain(GetModuleHandle(NULL), NULL, NULL, 1);
+
+	system("pause");
+	return 0;
+}
+#endif
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)

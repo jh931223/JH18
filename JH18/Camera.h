@@ -2,12 +2,12 @@
 #include "Transform.h"
 class Camera
 {
-	Transform transform;
 	Matrix3 viewMatrix;
 public:
 	Camera();
 	~Camera();
-	void RecalcMatrix();
+	Transform2D transform;
+	Matrix3 GenerateMatrix();
 	Matrix3 GetViewMatrix();
 };
 

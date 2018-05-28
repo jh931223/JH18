@@ -8,12 +8,12 @@ SpriteRenderer::SpriteRenderer()
 {
 }
 
-SpriteRenderer::SpriteRenderer(Transform _transform, Material * _m, Mesh * _me, int _sL)
+SpriteRenderer::SpriteRenderer(Transform2D _transform, Material * _m, Mesh * _me, int _sL)
 {
 	transform = (_transform); material = (_m); mesh = (_me); sortingLayer = (_sL);
 }
 
-void SpriteRenderer::SetRenderer(Transform _transform, Material * _m, Mesh * _me, int _sL)
+void SpriteRenderer::SetRenderer(Transform2D _transform, Material * _m, Mesh * _me, int _sL)
 {
 	transform = (_transform); material = (_m); mesh = (_me); sortingLayer = (_sL);
 }
