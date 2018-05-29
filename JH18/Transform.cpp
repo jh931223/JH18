@@ -4,11 +4,11 @@
 #include"Matrix.h"
 
 
-Transform2D::Transform2D()
+Transform::Transform()
 {
 }
 
-Transform2D::Transform2D(Vector3 pos, Vector3 rot, Vector3 _scale)
+Transform::Transform(Vector3 pos, Vector3 rot, Vector3 _scale)
 {
 	position = pos;
 	rotation = Vector3(rot.X,rot.X, rot.X);
@@ -16,29 +16,35 @@ Transform2D::Transform2D(Vector3 pos, Vector3 rot, Vector3 _scale)
 }
 
 
-Transform2D::~Transform2D()
+Transform::~Transform()
 {
 }
 
-Matrix3 Transform2D::GetTRSMatrix()
+Matrix4 Transform::GetTRSMatrix()
 {
-	Matrix3 TM, RM, SM;
-	TM.SetTranslation(position.X, position.Y);
-	RM.SetRotation(rotation.X);
-	SM.SetScale(scale.X);
+	Matrix4 TM, RM, SM;
+	TM.SetTranslation(position.X, position.Y,position.Z);
+	RM.SetRotation(rotation.X,rotation.Y,rotation.Z);
+	SM.SetScale(scale.X,scale.Y,scale.Z);
 	return TM*RM*SM;
 }
 
-Matrix3 Transform2D::GetRMatrix()
+Matrix4 Transform::GetRMatrix()
 {
-	Matrix3 RM;
-	RM.SetRotation(rotation.X);
+	Matrix4 RM;
+	RM.SetRotation(rotation.X, rotation.Y, rotation.Z);
 	return RM;
 }
 
-Matrix3 Transform2D::GetTMatrix()
+Matrix4 Transform::GetTMatrix()
 {
-	Matrix3 TM;
-	TM.SetTranslation(position.X, position.Y);
+	Matrix4 TM;
+	TM.SetTranslation(position.X, position.Y, position.Z);
 	return TM;
+}
+
+Vector3 Transform::forward()
+{
+
+	return Vector3(0,0,1)*GetRMatrix();
 }

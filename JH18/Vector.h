@@ -14,6 +14,9 @@ public:
 	IntPoint(int InX, int InY) : X(InX), Y(InY) {}
 
 };
+struct Vector2;
+struct Vector3;
+
 
 struct Vector2
 {
@@ -37,9 +40,18 @@ public:
 		return IntPoint((int)(X), (int)(Y));
 	}
 
+	Vector3 ToVector3();
+
 	float Dot(const Vector2 v) const
 	{
 		return X * v.X + Y * v.Y;
+	}
+
+
+	void SetPoint(float InX, float InY)
+	{
+		X = InX;
+		Y = InY;
 	}
 
 	Vector2 operator+(const Vector2& V) const;
@@ -51,6 +63,7 @@ FORCEINLINE bool Vector2::Equals(const Vector2& V, float Tolerance) const
 {
 	return fabs(X - V.X) <= Tolerance && fabs(Y - V.Y) <= Tolerance;
 }
+
 
 struct Vector3
 {
@@ -101,9 +114,14 @@ public:
 	{
 		return X * v.X + Y * v.Y + Z * v.Z;
 	}
+	static Vector3 Cross(const Vector3 one, const Vector3 other)
+	{
+		return Vector3(one.Y*other.Z - one.Z*other.Y, one.Z*other.X - one.X*other.Z, one.X*other.Y - one.Y*other.X);
+	}
 
 	Vector3 operator*(float scale) const;
 	Vector3 operator+(const Vector3& V) const;
 	Vector3 operator-(const Vector3& V) const;
 	Vector3 operator *(const Matrix3 Mat) const;
+	Vector3 operator *(const Matrix4 Mat) const;
 };

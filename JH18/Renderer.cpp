@@ -120,7 +120,7 @@ void InitFrame(void)
 	mesh1.SetIndices(indices, 6);
 
 	////////////////////·»´õ·¯ ¼Â
-	Transform2D tr;
+	Transform tr;
 
 	{
 		tr.position = Vector3(100, 0, 0), tr.rotation = Vector3(0, 0, 0), tr.scale = Vector3(0.3, 0.3, 0.3);
@@ -128,7 +128,7 @@ void InitFrame(void)
 		rendererArray.push_back(&renderer1);
 	}
 
-	{ 
+	{
 		tr.position = Vector3(-100, 0, 0), tr.rotation = Vector3(0, 0, 0), tr.scale = Vector3(0.3, 0.3, 0.3);
 		renderer2.SetRenderer(tr, &mat2, &mesh1, 1);
 		rendererArray.push_back(&renderer2);
@@ -140,7 +140,7 @@ void InitFrame(void)
 
 	mainCam.GenerateMatrix();
 }
-Vector2 GetRectHit(Vector2 top, Vector2 bottom, Vector2 start,Vector2 dir)
+Vector2 GetRectHit(Vector2 top, Vector2 bottom, Vector2 start, Vector2 dir)
 {
 	if (0 == dir.X && 1 == dir.Y)
 		return Vector2(start.X, top.Y);
@@ -157,7 +157,7 @@ Vector2 GetRectHit(Vector2 top, Vector2 bottom, Vector2 start,Vector2 dir)
 		(top.X - start.X) / dir.X, // ¿ì
 		(bottom.X - start.X) / dir.X, // ÁÂ
 	};
-	int min=-1;
+	int min = -1;
 	for (int i = 0; i < 4; i++)
 	{
 		if (min == -1 || min > n[i])
@@ -184,13 +184,13 @@ void UpdateFrame(void)
 	if (GetAsyncKeyState(VK_DOWN)) angle -= 1.0f;
 	if (GetAsyncKeyState(VK_PRIOR)) scale += 0.1f;
 	if (GetAsyncKeyState(VK_NEXT)) scale -= 0.1f;
-	mainCam.transform.position = mainCam.transform.position + Vector3(offsetX, 0,0);
+	mainCam.transform.position = mainCam.transform.position + Vector3(offsetX, 0, 0);
 	mainCam.transform.rotation = mainCam.transform.rotation + Vector3(angle, angle, angle);
 	mainCam.transform.scale = mainCam.transform.scale + Vector3(scale, scale, scale);
-	
 
 
-	Matrix3 viewMatrix= mainCam.GenerateMatrix(), projMatrix;
+
+	Matrix3 viewMatrix = mainCam.GenerateMatrix(), projMatrix;
 	for (auto i : rendererArray)
 	{
 		i->DrawCall(viewMatrix, projMatrix);
@@ -205,8 +205,8 @@ void UpdateFrame(void)
 	//MaxX
 	Vector3 maxAxis(0, 0, 1);
 	maxAxis = maxAxis * viewMatrix;
-	Vector3 dir = Vector3(1, 0,1)*viewMatrix - maxAxis;
-	point=GetRectHit(top, bottom, Vector2(maxAxis.X, maxAxis.Y), Vector2(dir.X, dir.Y));
+	Vector3 dir = Vector3(1, 0, 1)*viewMatrix - maxAxis;
+	point = GetRectHit(top, bottom, Vector2(maxAxis.X, maxAxis.Y), Vector2(dir.X, dir.Y));
 	maxAxis.SetPoint(point.X, point.Y);
 
 
@@ -214,7 +214,7 @@ void UpdateFrame(void)
 	Vector3 minAxis(0, 0, 1);
 	minAxis = minAxis* mainCam.transform.GetRMatrix() * viewMatrix;
 	dir = Vector3(-1, 0, 1)*viewMatrix - minAxis;;
-	point=GetRectHit(top, bottom, Vector2(minAxis.X, minAxis.Y), Vector2(dir.X, dir.Y));
+	point = GetRectHit(top, bottom, Vector2(minAxis.X, minAxis.Y), Vector2(dir.X, dir.Y));
 	minAxis.SetPoint(point.X, point.Y);
 
 	SetColor(255, 0, 0);
@@ -225,20 +225,20 @@ void UpdateFrame(void)
 	//MaxY
 	maxAxis.SetPoint(0, 0, 1);
 	maxAxis = maxAxis * viewMatrix;
-	 dir = Vector3(0, 1, 1)*viewMatrix - maxAxis;
+	dir = Vector3(0, 1, 1)*viewMatrix - maxAxis;
 	point = GetRectHit(top, bottom, Vector2(maxAxis.X, maxAxis.Y), Vector2(dir.X, dir.Y));
 	maxAxis.SetPoint(point.X, point.Y);
 
 	//MinY
 	minAxis.SetPoint(0, 0, 1);
 	minAxis = minAxis * mainCam.transform.GetRMatrix() * viewMatrix;
-	dir = Vector3(0, -1, 1)*viewMatrix - minAxis;;
+	dir = Vector3(0, -1, 1)*viewMatrix - minAxis;
 	point = GetRectHit(top, bottom, Vector2(minAxis.X, minAxis.Y), Vector2(dir.X, dir.Y));
 	minAxis.SetPoint(point.X, point.Y);
 
 	SetColor(0, 255, 0);
 	DrawLine(minAxis, maxAxis);
-	
+
 
 
 	//Triangle T2(v1, v4, v3);
